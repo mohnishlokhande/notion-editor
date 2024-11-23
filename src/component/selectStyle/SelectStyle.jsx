@@ -4,12 +4,8 @@ function SelectStyle({ setTag }) {
   return (
     <select
       name="styleType"
-      //   onSelect={(e) => {
-      //     console.log("###select", e.target);
-      //   }}
       onChange={(e) => {
         setTag(e.target.value);
-        console.log("###selec%%%%t", e.target.value);
       }}
     >
       <option value="p">Paragraph</option>

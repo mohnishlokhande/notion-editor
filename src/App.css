@@ -30,11 +30,9 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 2rem;
+  padding: 2rem 0rem;
 }
-.p {
-  margin: 0;
-}
+
 @keyframes logo-spin {
   from {
     transform: rotate(0deg);

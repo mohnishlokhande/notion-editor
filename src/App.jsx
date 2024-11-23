@@ -2,14 +2,15 @@ import { useState } from "react";
 import "./App.css";
 import TextBlock from "./component/textBlock/TextBlock";
 import SelectStyle from "./component/selectStyle/SelectStyle";
+import EditableList from "./component/List";
 
 // const initState = {
 //   id: 0,
 //   type: "text",
 //   value: {
-//     textStyle: "p",
+//     textStyle: "ul",
 //     text: "",
-//     list: [],
+//     list: ["check"],
 //   },
 // };
 
@@ -29,15 +30,13 @@ function App() {
     }
   };
 
-  const convertToBase64 = (file) => {
-    const reader = new FileReader();
-
-    reader.readAsDataURL(file);
-
-    reader.onload = () => {
-      console.log("called: ", reader);
-    };
-  };
+  // const convertToBase64 = (file) => {
+  //   const reader = new FileReader();
+  //   reader.readAsDataURL(file);
+  //   reader.onload = () => {
+  //     console.log("called: ", reader);
+  //   };
+  // };
 
   const onUndo = () => {
     setBlocks(undoStack[undoStack.length - 1]);
@@ -48,16 +47,32 @@ function App() {
   };
 
   const onRedo = () => {
-    console.log("###", redoStack);
     setBlocks(redoStack[redoStack.length - 1]);
     let redoCur = redoStack;
-    console.log("###", redoStack);
     redoStack.splice(redoStack.length - 1);
     setRedoStack(redoCur);
     setUndoStack([...undoStack, blocks]);
   };
 
-  console.log("###blocks", undoStack, "|", redoStack, "|", blocks);
+  const onSaveText = () => {
+    if (!text) return;
+    let newBlock = {
+      id: blocks.length,
+      type: "text",
+      value: {
+        textStyle: tag,
+      },
+    };
+    if (tag === "ul") {
+      newBlock.value.list = [text];
+    } else newBlock.value.text = text;
+
+    setBlocks([...blocks, newBlock]);
+    setText("");
+    setCurrentBlock("");
+    setTag("p");
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
       <div style={{ display: "flex", flexDirection: "column" }}>
@@ -90,38 +105,19 @@ function App() {
                 setText(e.target.value);
               }}
             />
-            <button
-              onClick={() => {
-                let newBlock = {
-                  id: blocks.length,
-                  type: "text",
-                  value: {
-                    textStyle: tag,
-                  },
-                };
-                if (tag === "li") {
-                  newBlock.value.list = [text];
-                } else newBlock.value.text = text;
-
-                setBlocks([...blocks, newBlock]);
-                setText("");
-                setCurrentBlock("");
-              }}
-            >
-              Save
-            </button>
+            <button onClick={onSaveText}>Save</button>
           </div>
         )}
         {currentBlock === "img" && (
           <input
             type="file"
             onChange={(e) => {
-              console.log(
-                "###file",
-                e.target.files[0],
-                "|",
-                URL.createObjectURL(e.target.files[0])
-              );
+              // console.log(
+              //   "###file",
+              //   e.target.files[0],
+              //   "|",
+              //   URL.createObjectURL(e.target.files[0])
+              // );
               let newBlock = {
                 id: blocks.length,
                 type: "img",
@@ -129,23 +125,9 @@ function App() {
                   src: URL.createObjectURL(e.target.files[0]),
                 },
               };
-              convertToBase64(e.target.files[0]);
+              // convertToBase64(e.target.files[0]);
               setBlocks([...blocks, newBlock]);
               setCurrentBlock("");
-              // let base64String = "";
-              // let reader = new FileReader();
-              // console.log("next");
-
-              // reader.onload = function () {
-              //   base64String = reader.result
-              //     .replace("data:", "")
-              //     .replace(/^.+,/, "");
-
-              //   // let imageBase64Stringsep = base64String;
-
-              //   // alert(imageBase64Stringsep);
-              //   console.log("###base64 =>", base64String);
-              // };
             }}
           />
         )}
@@ -164,6 +146,7 @@ function App() {
           );
         })}
       </div>
+      <EditableList />
     </div>
   );
 }

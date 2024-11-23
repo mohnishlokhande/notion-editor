@@ -1,21 +1,16 @@
 import PropTypes from "prop-types";
 import { useState } from "react";
 import styles from "./TextBlock.module.css";
+import ListItems from "./listItems/ListItems";
 
 function TextBlock(props) {
   const { item, blocks, setBlocks, setUndoStack } = props;
-  const [count, setCount] = useState(0);
+
   const [isEdit, setIsEdit] = useState(false);
   const [txt, setTxt] = useState(item.value.text);
-  // console.log("###txt", item, "|", blocks);
+
   const onSelectText = () => {
-    if (count == 1) {
-      setIsEdit(true);
-    }
-    setCount(count + 1);
-    setTimeout(() => {
-      setCount(0);
-    }, 500);
+    setIsEdit(true);
   };
 
   const onBlur = () => {
@@ -38,30 +33,31 @@ function TextBlock(props) {
   };
 
   if (item.type === "img") {
-    return <img src={item.value.src} alt="img" />;
-  }
-
-  if (item?.value.textStyle === "ul") {
     return (
-      <ul>
-        {item?.value?.list?.map((child, index) => {
-          return <li key={index}>{child}</li>;
-        })}
-      </ul>
+      <img
+        src={item.value.src}
+        alt="img"
+        style={{ width: "90vw", padding: "1rem 0rem" }}
+      />
     );
   }
 
+  if (item?.value.textStyle === "ul") {
+    return <ListItems blocks={blocks} setBlocks={setBlocks} item={item} />;
+  }
+
   return (
-    <div onClick={onSelectText}>
+    <div onDoubleClick={onSelectText}>
       {isEdit ? (
         <input
+          autoFocus
           value={txt}
           onChange={(e) => {
             console.log("###change", e.key);
             setTxt(e.target.value);
           }}
           onBlur={onBlur}
-          onKeyPress={(e) => {
+          onKeyDown={(e) => {
             if (e.key === "Enter") {
               console.log("###clcik", e.key);
             }
